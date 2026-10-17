@@ -1,0 +1,467 @@
+:root {
+  --color-sky: #9fdcff;
+  --color-panel: rgb(255 255 255 / 0.92);
+  --color-text: #1d2433;
+  --color-muted: #4a5568;
+  --color-accent: #ff7f3f;
+  --color-accent-strong: #c2410c;
+  --color-gold: #b7791f;
+  --color-hud-text: #ffffff;
+  --color-hud-shadow: rgb(0 0 0 / 0.55);
+  --color-fuel: #ffb020;
+  --color-fuel-low: #ef4444;
+  --color-track: rgb(0 0 0 / 0.35);
+  --color-kbd: #edf2f7;
+  --radius: 16px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-panel: rgb(23 27 38 / 0.94);
+    --color-text: #f1f5f9;
+    --color-muted: #cbd5e1;
+    --color-accent: #ff8f55;
+    --color-accent-strong: #ffb38a;
+    --color-gold: #f6c453;
+    --color-kbd: #2d3748;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-sky);
+  color: var(--color-text);
+  font-family: var(--font);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+#game-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- HUD ---------- */
+
+.hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  color: var(--color-hud-text);
+  text-shadow: 0 1px 3px var(--color-hud-shadow);
+  font-weight: 700;
+}
+
+.hud p {
+  margin: 0;
+}
+
+.hud__left,
+.hud__center,
+.hud__right {
+  position: absolute;
+  top: calc(10px + var(--safe-top));
+}
+
+.hud__left {
+  left: calc(12px + var(--safe-left));
+}
+
+.hud__center {
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.hud__right {
+  right: calc(12px + var(--safe-right));
+  text-align: right;
+}
+
+.hud__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.9;
+}
+
+.hud__score {
+  font-size: 1.5rem;
+}
+
+.hud__combo {
+  margin-top: 2px;
+  font-size: 1.1rem;
+  color: #ffe066;
+}
+
+.hud__popup {
+  margin-top: 4px;
+  font-size: 1.2rem;
+  color: #fff3b0;
+  opacity: 0;
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.hud__popup.is-visible {
+  opacity: 1;
+  transform: translateY(-4px);
+  transition: none;
+}
+
+.hud__time {
+  font-size: 1.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud__time.is-urgent {
+  color: #ffb4b4;
+}
+
+.hud__compass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2px;
+  color: #ffe066;
+}
+
+.hud__compass-arrow {
+  display: inline-block;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.hud__compass-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hud__best {
+  font-size: 1rem;
+}
+
+.hud__buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.icon-button {
+  pointer-events: auto;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.35);
+  color: #ffffff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.icon-button:focus-visible,
+.primary-button:focus-visible,
+.thrust-button:focus-visible {
+  outline: 3px solid #ffe066;
+  outline-offset: 3px;
+}
+
+.fuel {
+  position: absolute;
+  bottom: calc(14px + var(--safe-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(240px, 40vw);
+  text-align: center;
+}
+
+.fuel__label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.fuel__track {
+  height: 12px;
+  margin-top: 3px;
+  border-radius: 6px;
+  background: var(--color-track);
+  overflow: hidden;
+}
+
+.fuel__bar {
+  height: 100%;
+  background: var(--color-fuel);
+  transform-origin: left center;
+}
+
+.fuel__bar.is-low {
+  background: var(--color-fuel-low);
+}
+
+/* ---------- Touch controls ---------- */
+
+.touch-controls {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.touch-controls {
+  visibility: hidden;
+}
+
+.is-playing .touch-controls {
+  visibility: visible;
+}
+
+.joystick-zone {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50%;
+  height: 75%;
+  pointer-events: auto;
+}
+
+.joystick-base {
+  position: absolute;
+  left: calc(90px + var(--safe-left));
+  top: 65%;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.18);
+  border: 2px solid rgb(255 255 255 / 0.5);
+  transform: translate(-50%, -50%);
+  opacity: 0.6;
+}
+
+.joystick-base.is-active {
+  opacity: 1;
+}
+
+.joystick-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.75);
+  transform: translate(-50%, -50%);
+}
+
+.thrust-button {
+  position: absolute;
+  right: calc(36px + var(--safe-right));
+  bottom: calc(36px + var(--safe-bottom));
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  border: 3px solid rgb(255 255 255 / 0.8);
+  background: rgb(255 127 63 / 0.55);
+  font-size: 2.4rem;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.thrust-button.is-pressed {
+  background: rgb(255 127 63 / 0.9);
+  transform: scale(0.95);
+}
+
+/* ---------- Screens ---------- */
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: calc(16px + var(--safe-top)) calc(16px + var(--safe-right)) calc(16px + var(--safe-bottom)) calc(16px + var(--safe-left));
+  background: rgb(10 30 50 / 0.25);
+  overflow-y: auto;
+  touch-action: pan-y;
+}
+
+.panel {
+  width: min(520px, 100%);
+  padding: 20px 24px;
+  border-radius: var(--radius);
+  background: var(--color-panel);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.25);
+  text-align: center;
+}
+
+.panel__title {
+  margin: 0 0 6px;
+  font-size: 2rem;
+  color: var(--color-accent-strong);
+}
+
+.panel__lead {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.panel__record {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-gold);
+}
+
+.panel__final {
+  margin: 4px 0;
+  font-size: 1.6rem;
+}
+
+.panel__stats,
+.panel__best {
+  margin: 4px 0;
+  color: var(--color-muted);
+}
+
+.rules {
+  margin: 0 0 10px;
+  padding-left: 1.2em;
+  text-align: left;
+  line-height: 1.45;
+}
+
+.controls {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  line-height: 1.8;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0 0.35em;
+  margin: 0 1px;
+  border-radius: 4px;
+  background: var(--color-kbd);
+  color: var(--color-text);
+  font-family: var(--font);
+  font-size: 0.85em;
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.2);
+}
+
+.controls--touch {
+  display: none;
+}
+
+.primary-button {
+  margin-top: 10px;
+  padding: 12px 40px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-accent-strong);
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+  .primary-button {
+    background: #c2410c;
+  }
+}
+
+.primary-button:hover {
+  filter: brightness(1.08);
+}
+
+.rotate-hint {
+  display: none;
+}
+
+.noscript {
+  position: fixed;
+  inset: auto 16px 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--color-panel);
+  text-align: center;
+}
+
+/* Touch devices: show touch help, compact panels, and ask for landscape. */
+@media (pointer: coarse) {
+  .controls--keyboard {
+    display: none;
+  }
+
+  .controls--touch {
+    display: block;
+  }
+}
+
+@media (pointer: coarse) and (orientation: portrait) {
+  .rotate-hint {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: var(--color-panel);
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+  }
+}
+
+@media (max-height: 480px) {
+  .panel {
+    padding: 12px 18px;
+  }
+
+  .panel__title {
+    font-size: 1.5rem;
+  }
+
+  .rules {
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .hud__time {
+    font-size: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud__popup {
+    transition: none;
+  }
+}
