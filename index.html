@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+  <meta name="theme-color" content="#9fdcff">
+  <meta name="description" content="Dino Jetpack : un petit jeu 3D où un dinosaure à jetpack ramasse des œufs.">
+  <title>Dino Jetpack</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <canvas id="game-canvas" aria-label="Vue 3D du jeu Dino Jetpack" role="img"></canvas>
+
+  <div id="hud" class="hud" hidden>
+    <div class="hud__left">
+      <p class="hud__score"><span class="hud__label">Score</span> <span id="hud-score">0</span></p>
+      <p id="hud-combo" class="hud__combo" hidden>Combo ×<span id="hud-multiplier">1</span></p>
+      <p id="hud-popup" class="hud__popup" aria-hidden="true"></p>
+    </div>
+    <div class="hud__center">
+      <p id="hud-time" class="hud__time">2:00</p>
+      <div id="hud-compass" class="hud__compass" hidden title="Direction de l'œuf doré le plus proche">
+        <span id="hud-compass-arrow" class="hud__compass-arrow" aria-hidden="true">▲</span>
+        <span class="hud__compass-label">Œuf doré</span>
+      </div>
+    </div>
+    <div class="hud__right">
+      <p class="hud__best"><span class="hud__label">Record</span> <span id="hud-best">0</span></p>
+      <div class="hud__buttons">
+        <button id="mute-button" class="icon-button" type="button" aria-pressed="false" aria-label="Couper le son">🔊</button>
+        <button id="pause-button" class="icon-button" type="button" aria-label="Pause">⏸</button>
+      </div>
+    </div>
+    <div class="fuel" aria-hidden="true">
+      <span class="fuel__label">Carburant</span>
+      <div class="fuel__track"><div id="fuel-bar" class="fuel__bar"></div></div>
+    </div>
+  </div>
+
+  <div id="touch-controls" class="touch-controls" hidden>
+    <div id="joystick-zone" class="joystick-zone">
+      <div id="joystick-base" class="joystick-base"><div id="joystick-knob" class="joystick-knob"></div></div>
+    </div>
+    <button id="thrust-button" class="thrust-button" type="button" aria-label="Jetpack">🔥</button>
+  </div>
+
+  <section id="start-screen" class="screen" aria-labelledby="start-title">
+    <div class="panel">
+      <h1 id="start-title" class="panel__title">Dino Jetpack</h1>
+      <p class="panel__lead">Ramasse un maximum d'œufs en 2 minutes&nbsp;!</p>
+      <ul class="rules">
+        <li>Le jetpack consomme du carburant&nbsp;: <strong>pose-toi pour le recharger</strong>.</li>
+        <li>Enchaîne les œufs <strong>sans toucher le sol</strong> pour un combo jusqu'à ×5.</li>
+        <li>Les <strong>œufs dorés</strong> valent 5 points mais disparaissent vite.</li>
+      </ul>
+      <p class="controls controls--keyboard">
+        <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>Z</kbd><kbd>Q</kbd><kbd>S</kbd><kbd>D</kbd> ou flèches&nbsp;: avancer et tourner ·
+        <kbd>Espace</kbd>&nbsp;: jetpack · <kbd>P</kbd>&nbsp;: pause · <kbd>M</kbd>&nbsp;: son
+      </p>
+      <p class="controls controls--touch">Joystick à gauche pour avancer et tourner, bouton 🔥 à droite pour voler.</p>
+      <p class="panel__best">Record&nbsp;: <span id="start-best">0</span></p>
+      <button id="start-button" class="primary-button" type="button">Jouer</button>
+    </div>
+  </section>
+
+  <section id="pause-screen" class="screen" aria-labelledby="pause-title" hidden>
+    <div class="panel">
+      <h2 id="pause-title" class="panel__title">Pause</h2>
+      <button id="resume-button" class="primary-button" type="button">Reprendre</button>
+    </div>
+  </section>
+
+  <section id="over-screen" class="screen" aria-labelledby="over-title" hidden>
+    <div class="panel" aria-live="polite">
+      <h2 id="over-title" class="panel__title">Temps écoulé&nbsp;!</h2>
+      <p id="over-record" class="panel__record" hidden>Nouveau record&nbsp;!</p>
+      <p class="panel__final">Score&nbsp;: <strong id="over-score">0</strong></p>
+      <p class="panel__stats"><span id="over-eggs">0</span> œufs · plus longue série en vol&nbsp;: <span id="over-chain">0</span></p>
+      <p class="panel__best">Record&nbsp;: <span id="over-best">0</span></p>
+      <button id="restart-button" class="primary-button" type="button">Rejouer</button>
+    </div>
+  </section>
+
+  <div id="rotate-hint" class="rotate-hint" role="alert">
+    <p>Tourne ton téléphone en mode paysage pour jouer 📱↻</p>
+  </div>
+
+  <noscript><p class="noscript">Ce jeu a besoin de JavaScript.</p></noscript>
+  <p id="webgl-error" class="noscript" hidden>Ton navigateur ne prend pas en charge WebGL, nécessaire pour ce jeu.</p>
+</body>
+</html>
